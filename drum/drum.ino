@@ -11,7 +11,7 @@ Logic的音轨设置为鼓音源后，打开钢琴卷帘，从下往上数，以
 */
 #define NOTE_KICK 36  // 低音鼓
 #define NOTE_SNARE 38 // 军鼓
-//#define NOTE_LOW_TOM 41  // 低音桶鼓
+#define NOTE_LOW_TOM 41  // 低音桶鼓
 //#define NOTE_MID_TOM 45  // 中音桶鼓
 //#define NOTE_HIGH_TOM 48 // 高音桶鼓
 
@@ -29,20 +29,23 @@ Logic的音轨设置为鼓音源后，打开钢琴卷帘，从下往上数，以
 #define NOTE_OFF_CMD 0x80  //音符结束标记
 #define MAX_MIDI_VELOCITY 127  //音符最大力度
 
-#define KICK_THRESHOLD 200
+#define KICK_THRESHOLD 1   
 #define SNARE_THRESHOLD 200
+#define LOW_TOM_THRESHOLD 150
 #define HI_HAT_THRESHOLD 120
 #define CRASH_LEFT_THRESHOLD 150
 
 
-#define LED_PIN 13  // Arduino上的LED灯，每次打击的时候点亮
 #define NUM_PIEZOS 4  // 总共4个压电传感器
 #define START_SLOT A0
+#define KICK_SLOT 13
 
 #define SIGNAL_BUFFER_SIZE 60
 #define PEAK_BUFFER_SIZE 20
 #define MAX_TIME_BETWEEN_PEAKS 10
 #define MIN_TIME_BETWEEN_NOTES 35
+
+int lastKickLevel;
 
 unsigned short slotMap[NUM_PIEZOS];
 
@@ -63,12 +66,12 @@ unsigned long lastPeakTime[NUM_PIEZOS];
 unsigned long lastNoteTime[NUM_PIEZOS];
 
 
+
 void setup()
 {
   Serial.begin(SERIAL_RATE);
   while(!Serial);
-  pinMode(LED_PIN, OUTPUT);
-
+  pinMode(KICK_SLOT, INPUT);
 
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
@@ -84,12 +87,12 @@ void setup()
     slotMap[i] = START_SLOT + i;
   }
   
-  thresholdMap[0] = KICK_THRESHOLD;
+  thresholdMap[0] = LOW_TOM_THRESHOLD;
   thresholdMap[1] = SNARE_THRESHOLD;
   thresholdMap[2] = HI_HAT_THRESHOLD;
   thresholdMap[3] = CRASH_LEFT_THRESHOLD;
   
-  noteMap[0] = NOTE_KICK;
+  noteMap[0] = NOTE_LOW_TOM;
   noteMap[1] = NOTE_SNARE;
   noteMap[2] = NOTE_HI_HAT_CLOSED;
   noteMap[3] = NOTE_CRASH_LEFT; 
@@ -98,8 +101,9 @@ void setup()
 
 void loop()
 {
- unsigned long currentTime = millis();
-  
+
+  pedalHandler();
+  unsigned long currentTime = millis();
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
     unsigned short newSignal = analogRead(slotMap[i]);
@@ -144,6 +148,16 @@ void loop()
 
 }
 
+
+// 利用midi键盘的延音踏板来控制底鼓，设置引脚的电位，如果是高电位，则发送midi数据；如果一直保持高电位只发送一次
+void pedalHandler() {
+  int currentLevel = digitalRead(KICK_SLOT);
+  if (currentLevel == 1 &&  lastKickLevel == 0) {
+     noteFire(NOTE_KICK, 127);
+   }
+  lastKickLevel = currentLevel;
+}
+
 void recordNewPeak(short slot, short newPeak)
 {
   isLastPeakZeroed[slot] = (newPeak == 0);
@@ -180,12 +194,10 @@ void recordNewPeak(short slot, short newPeak)
 void noteFire(int note, int velocity)
 {
   Serial.println(velocity);
-  digitalWrite(LED_PIN, HIGH);
   if(velocity > MAX_MIDI_VELOCITY)
     velocity = MAX_MIDI_VELOCITY;
   midiNoteOn(note, velocity);
   midiNoteOff(note, velocity);
-  digitalWrite(LED_PIN, LOW);
 }
 
 void midiNoteOn(byte note, byte midiVelocity)

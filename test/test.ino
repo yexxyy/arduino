@@ -1,9 +1,12 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  pinMode(13, OUTPUT);
+  pinMode(12, INPUT);
 }
 
 void loop() {
-   digitalWrite(13, HIGH);
+   int level = digitalRead(12);
+   if (level > 0) {
+    Serial.println(level); 
+   }
 }

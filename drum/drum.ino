@@ -28,8 +28,14 @@
 #define SNARE_THRESHOLD 10
 #define LOW_TOM_THRESHOLD 10
 #define HI_HAT_THRESHOLD 10
-#define CRASH_LEFT_THRESHOLD 10
+#define CRASH_LEFT_THRESHOLD 15
 #define HIGH_TOM_THRESHOLD 10
+
+#define SNARE_SCALE 8
+#define LOW_TOM_SCALE 6
+#define HI_HAT_SCALE 7
+#define CRASH_LEFT_SCALE 4
+#define HIGH_TOM_SCALE 6
 
 #define NUM_PIEZOS 4  // 总共5个压电传感器
 #define START_SLOT A0
@@ -48,6 +54,8 @@ unsigned short slotMap[NUM_PIEZOS];
 unsigned short noteMap[NUM_PIEZOS];
 
 unsigned short thresholdMap[NUM_PIEZOS];
+
+unsigned short scaleMap[NUM_PIEZOS];
 
 short currentSignalIndex[NUM_PIEZOS];
 short currentPeakIndex[NUM_PIEZOS];
@@ -100,6 +108,12 @@ void setup()
   noteMap[2] = NOTE_HI_HAT_CLOSED;
   noteMap[3] = NOTE_CRASH_LEFT; 
 //  noteMap[4] = NOTE_HIGH_TOM; 
+
+  scaleMap[0] = LOW_TOM_SCALE;
+  scaleMap[1] = SNARE_SCALE;
+  scaleMap[2] = HI_HAT_SCALE;
+  scaleMap[3] = CRASH_LEFT_SCALE; 
+//  scaleMap[4] = HIGH_TOM_SCALE; 
 }
 
 void loop()
@@ -113,7 +127,7 @@ void loop()
     unsigned short newSignal = analogRead(slotMap[i]);
     
     // 对原始信号进行"归一化"处理，使得所有的数值分布在MAX_MIDI_VELOCITY以内
-    newSignal = newSignal / 8;
+    newSignal = newSignal / scaleMap[i];
     if (newSignal > MAX_MIDI_VELOCITY) newSignal = MAX_MIDI_VELOCITY;
     
     signalBuffer[i][currentSignalIndex[i]] = newSignal;

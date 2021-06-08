@@ -25,20 +25,20 @@
 
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 15
+#define SNARE_THRESHOLD 10
 #define LOW_TOM_THRESHOLD 10
-#define HI_HAT_THRESHOLD 12
-#define CRASH_LEFT_THRESHOLD 15
+#define HI_HAT_THRESHOLD 10
+#define CRASH_LEFT_THRESHOLD 10
 #define HIGH_TOM_THRESHOLD 10
 
-#define NUM_PIEZOS 5  // 总共4个压电传感器
+#define NUM_PIEZOS 4  // 总共5个压电传感器
 #define START_SLOT A0
 #define KICK_SLOT 13
 
 #define SIGNAL_BUFFER_SIZE 100
 #define PEAK_BUFFER_SIZE 30
-#define MAX_TIME_BETWEEN_PEAKS 10
-#define MIN_TIME_BETWEEN_NOTES 30
+#define MAX_TIME_BETWEEN_PEAKS 20
+#define MIN_TIME_BETWEEN_NOTES 50
 
 // 缓存踏板控制的数字电位
 int lastKickLevel;
@@ -93,13 +93,13 @@ void setup()
   thresholdMap[1] = SNARE_THRESHOLD;
   thresholdMap[2] = HI_HAT_THRESHOLD;
   thresholdMap[3] = CRASH_LEFT_THRESHOLD;
-  thresholdMap[4] = HIGH_TOM_THRESHOLD;
+//  thresholdMap[4] = HIGH_TOM_THRESHOLD;
   
   noteMap[0] = NOTE_LOW_TOM;
   noteMap[1] = NOTE_SNARE;
   noteMap[2] = NOTE_HI_HAT_CLOSED;
   noteMap[3] = NOTE_CRASH_LEFT; 
-  noteMap[4] = NOTE_HIGH_TOM; 
+//  noteMap[4] = NOTE_HIGH_TOM; 
 }
 
 void loop()
@@ -215,7 +215,6 @@ void pedalHandler() {
 // 发送midi数据
 void noteFire(int note, int velocity)
 {
-  Serial.println(velocity);
   if(velocity > MAX_MIDI_VELOCITY)
     velocity = MAX_MIDI_VELOCITY;
   midiNoteOn(note, velocity);

@@ -25,17 +25,17 @@
 
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 10
-#define LOW_TOM_THRESHOLD 10
-#define HI_HAT_THRESHOLD 10
-#define CRASH_LEFT_THRESHOLD 15
-#define HIGH_TOM_THRESHOLD 10
+#define SNARE_THRESHOLD 15
+#define LOW_TOM_THRESHOLD 15
+#define HI_HAT_THRESHOLD 15
+#define CRASH_LEFT_THRESHOLD 45
+#define HIGH_TOM_THRESHOLD 25
 
 #define SNARE_SCALE 8
 #define LOW_TOM_SCALE 6
 #define HI_HAT_SCALE 7
 #define CRASH_LEFT_SCALE 1
-#define HIGH_TOM_SCALE 6
+#define HIGH_TOM_SCALE 4
 
 #define NUM_PIEZOS 5  // 总共5个压电传感器
 #define START_SLOT A0
@@ -221,9 +221,6 @@ void pedalHandler() {
   int currentLevel = digitalRead(KICK_SLOT);
   if (currentLevel == 1 && lastKickLevel == 0) {
      noteFire(NOTE_KICK, 127);
-//    Serial.print(lastKickLevel);
-//    Serial.print("  ");
-//    Serial.println(currentLevel);
    }
   lastKickLevel = currentLevel;
 }

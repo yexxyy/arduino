@@ -34,10 +34,10 @@
 #define SNARE_SCALE 8
 #define LOW_TOM_SCALE 6
 #define HI_HAT_SCALE 7
-#define CRASH_LEFT_SCALE 4
+#define CRASH_LEFT_SCALE 1
 #define HIGH_TOM_SCALE 6
 
-#define NUM_PIEZOS 4  // 总共5个压电传感器
+#define NUM_PIEZOS 5  // 总共5个压电传感器
 #define START_SLOT A0
 #define KICK_SLOT 13
 
@@ -97,23 +97,23 @@ void setup()
     slotMap[i] = START_SLOT + i;
   }
   
-  thresholdMap[0] = LOW_TOM_THRESHOLD;
-  thresholdMap[1] = SNARE_THRESHOLD;
-  thresholdMap[2] = HI_HAT_THRESHOLD;
-  thresholdMap[3] = CRASH_LEFT_THRESHOLD;
-//  thresholdMap[4] = HIGH_TOM_THRESHOLD;
+  thresholdMap[0] = HIGH_TOM_THRESHOLD;
+  thresholdMap[1] = LOW_TOM_THRESHOLD;
+  thresholdMap[2] = SNARE_THRESHOLD;
+  thresholdMap[3] = HI_HAT_THRESHOLD;
+  thresholdMap[4] = CRASH_LEFT_THRESHOLD;
   
-  noteMap[0] = NOTE_LOW_TOM;
-  noteMap[1] = NOTE_SNARE;
-  noteMap[2] = NOTE_HI_HAT_CLOSED;
-  noteMap[3] = NOTE_CRASH_LEFT; 
-//  noteMap[4] = NOTE_HIGH_TOM; 
+  noteMap[0] = NOTE_HIGH_TOM;
+  noteMap[1] = NOTE_LOW_TOM;
+  noteMap[2] = NOTE_SNARE;
+  noteMap[3] = NOTE_HI_HAT_CLOSED; 
+  noteMap[4] = NOTE_CRASH_LEFT; 
 
-  scaleMap[0] = LOW_TOM_SCALE;
-  scaleMap[1] = SNARE_SCALE;
-  scaleMap[2] = HI_HAT_SCALE;
-  scaleMap[3] = CRASH_LEFT_SCALE; 
-//  scaleMap[4] = HIGH_TOM_SCALE; 
+  scaleMap[0] = HIGH_TOM_SCALE;
+  scaleMap[1] = LOW_TOM_SCALE;
+  scaleMap[2] = SNARE_SCALE;
+  scaleMap[3] = HI_HAT_SCALE; 
+  scaleMap[4] = CRASH_LEFT_SCALE; 
 }
 
 void loop()
@@ -219,8 +219,11 @@ void recordNewPeak(short slot, short newPeak)
 */
 void pedalHandler() {
   int currentLevel = digitalRead(KICK_SLOT);
-  if (currentLevel == 1 &&  lastKickLevel == 0) {
+  if (currentLevel == 1 && lastKickLevel == 0) {
      noteFire(NOTE_KICK, 127);
+//    Serial.print(lastKickLevel);
+//    Serial.print("  ");
+//    Serial.println(currentLevel);
    }
   lastKickLevel = currentLevel;
 }

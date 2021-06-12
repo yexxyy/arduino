@@ -25,17 +25,17 @@
 
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 15
-#define LOW_TOM_THRESHOLD 15
-#define HI_HAT_THRESHOLD 15
-#define CRASH_LEFT_THRESHOLD 45
-#define HIGH_TOM_THRESHOLD 25
+#define SNARE_THRESHOLD 25
+#define LOW_TOM_THRESHOLD 25
+#define HI_HAT_THRESHOLD 25
+#define CRASH_LEFT_THRESHOLD 95
+#define HIGH_TOM_THRESHOLD 40
 
-#define SNARE_SCALE 8
-#define LOW_TOM_SCALE 6
-#define HI_HAT_SCALE 7
+#define SNARE_SCALE 7
+#define LOW_TOM_SCALE 4
+#define HI_HAT_SCALE 6
 #define CRASH_LEFT_SCALE 1
-#define HIGH_TOM_SCALE 4
+#define HIGH_TOM_SCALE 3
 
 #define NUM_PIEZOS 5  // 总共5个压电传感器
 #define START_SLOT A0

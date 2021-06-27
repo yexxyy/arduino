@@ -33,10 +33,10 @@
 #define KICK_THRESHOLD 50
 
 #define SNARE_SCALE 1
-#define LOW_TOM_SCALE 4
-#define HI_HAT_SCALE 3
-#define CRASH_LEFT_SCALE 8
-#define HIGH_TOM_SCALE 5
+#define LOW_TOM_SCALE 8
+#define HI_HAT_SCALE 7
+#define CRASH_LEFT_SCALE 9
+#define HIGH_TOM_SCALE 7
 #define KICK_SCALE 8
 
 #define NUM_PIEZOS 6  // 总共5个压电传感器
@@ -97,9 +97,9 @@ void setup()
   }
   
   thresholdMap[0] = HIGH_TOM_THRESHOLD;
-  thresholdMap[1] = LOW_TOM_THRESHOLD;
+  thresholdMap[1] = HI_HAT_THRESHOLD;
   thresholdMap[2] = CRASH_LEFT_THRESHOLD;
-  thresholdMap[3] = HI_HAT_THRESHOLD;
+  thresholdMap[3] = LOW_TOM_THRESHOLD;
   thresholdMap[4] = SNARE_THRESHOLD;
   thresholdMap[5] = KICK_THRESHOLD;
 
@@ -111,9 +111,9 @@ void setup()
   noteMap[5] = NOTE_KICK; 
 
   scaleMap[0] = HIGH_TOM_SCALE;
-  scaleMap[1] = LOW_TOM_SCALE;
+  scaleMap[1] = HI_HAT_SCALE;
   scaleMap[2] = CRASH_LEFT_SCALE;
-  scaleMap[3] = HI_HAT_SCALE; 
+  scaleMap[3] = LOW_TOM_SCALE; 
   scaleMap[4] = SNARE_SCALE; 
   scaleMap[5] = KICK_SCALE; 
 }

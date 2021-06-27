@@ -35,7 +35,7 @@
 #define SNARE_SCALE 1
 #define LOW_TOM_SCALE 8
 #define HI_HAT_SCALE 7
-#define CRASH_LEFT_SCALE 9
+#define CRASH_LEFT_SCALE 8
 #define HIGH_TOM_SCALE 7
 #define KICK_SCALE 8
 

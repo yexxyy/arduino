@@ -8,14 +8,14 @@
 #define NOTE_KICK 36  // 低音鼓
 #define NOTE_SNARE 38 // 军鼓
 #define NOTE_LOW_TOM 41  // 低音桶鼓
-//#define NOTE_MID_TOM 45  // 中音桶鼓
+#define NOTE_MID_TOM 45  // 中音桶鼓
 #define NOTE_HIGH_TOM 48 // 高音桶鼓
 
 #define NOTE_HI_HAT_CLOSED 42 // 踩镲关闭打击
-//#define NOTE_HI_HAT_OPEN 46  // 踩镲打开打击
+#define NOTE_HI_HAT_OPEN 46  // 踩镲打开打击
+#define NOTE_HI_HAT_FOOT_CLOSE 44  // 踩镲踩下
 
 #define NOTE_CRASH_LEFT 49 // 左边那个镲
-// #define NOTE_RIDE_EDGE 52 // 右边那个镲（边缘）
 
 
 
@@ -25,36 +25,35 @@
 
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 25
-#define LOW_TOM_THRESHOLD 25
-#define HI_HAT_THRESHOLD 25
-#define CRASH_LEFT_THRESHOLD 95
-#define HIGH_TOM_THRESHOLD 40
+#define SNARE_THRESHOLD 35
+#define LOW_TOM_THRESHOLD 20
+#define HI_HAT_THRESHOLD 20
+#define CRASH_LEFT_THRESHOLD 40
+#define HIGH_TOM_THRESHOLD 20
+#define KICK_THRESHOLD 50
 
-#define SNARE_SCALE 7
+#define SNARE_SCALE 1
 #define LOW_TOM_SCALE 4
-#define HI_HAT_SCALE 6
-#define CRASH_LEFT_SCALE 1
-#define HIGH_TOM_SCALE 3
+#define HI_HAT_SCALE 3
+#define CRASH_LEFT_SCALE 8
+#define HIGH_TOM_SCALE 5
+#define KICK_SCALE 8
 
-#define NUM_PIEZOS 5  // 总共5个压电传感器
+#define NUM_PIEZOS 6  // 总共5个压电传感器
 #define START_SLOT A0
 #define KICK_SLOT 13
 
-#define SIGNAL_BUFFER_SIZE 100
-#define PEAK_BUFFER_SIZE 30
+#define SIGNAL_BUFFER_SIZE 60
+#define PEAK_BUFFER_SIZE 20
 #define MAX_TIME_BETWEEN_PEAKS 20
-#define MIN_TIME_BETWEEN_NOTES 50
+#define MIN_TIME_BETWEEN_NOTES 40
 
 // 缓存踏板控制的数字电位
 int lastKickLevel;
 
 unsigned short slotMap[NUM_PIEZOS];
-
 unsigned short noteMap[NUM_PIEZOS];
-
 unsigned short thresholdMap[NUM_PIEZOS];
-
 unsigned short scaleMap[NUM_PIEZOS];
 
 short currentSignalIndex[NUM_PIEZOS];
@@ -99,21 +98,24 @@ void setup()
   
   thresholdMap[0] = HIGH_TOM_THRESHOLD;
   thresholdMap[1] = LOW_TOM_THRESHOLD;
-  thresholdMap[2] = SNARE_THRESHOLD;
+  thresholdMap[2] = CRASH_LEFT_THRESHOLD;
   thresholdMap[3] = HI_HAT_THRESHOLD;
-  thresholdMap[4] = CRASH_LEFT_THRESHOLD;
-  
+  thresholdMap[4] = SNARE_THRESHOLD;
+  thresholdMap[5] = KICK_THRESHOLD;
+
   noteMap[0] = NOTE_HIGH_TOM;
-  noteMap[1] = NOTE_LOW_TOM;
-  noteMap[2] = NOTE_SNARE;
-  noteMap[3] = NOTE_HI_HAT_CLOSED; 
-  noteMap[4] = NOTE_CRASH_LEFT; 
+  noteMap[1] = NOTE_HI_HAT_OPEN;
+  noteMap[2] = NOTE_CRASH_LEFT;
+  noteMap[3] = NOTE_LOW_TOM; 
+  noteMap[4] = NOTE_SNARE; 
+  noteMap[5] = NOTE_KICK; 
 
   scaleMap[0] = HIGH_TOM_SCALE;
   scaleMap[1] = LOW_TOM_SCALE;
-  scaleMap[2] = SNARE_SCALE;
+  scaleMap[2] = CRASH_LEFT_SCALE;
   scaleMap[3] = HI_HAT_SCALE; 
-  scaleMap[4] = CRASH_LEFT_SCALE; 
+  scaleMap[4] = SNARE_SCALE; 
+  scaleMap[5] = KICK_SCALE; 
 }
 
 void loop()
@@ -124,12 +126,14 @@ void loop()
   unsigned long currentTime = millis();
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
-    unsigned short newSignal = analogRead(slotMap[i]);
+    short newSignal = analogRead(slotMap[i]);
     
-    // 对原始信号进行"归一化"处理，使得所有的数值分布在MAX_MIDI_VELOCITY以内
+    // 对原始信号进行归零，抵消掉本来的压力值；"归一化"处理，使得所有的数值分布在0-MAX_MIDI_VELOCITY以内
     newSignal = newSignal / scaleMap[i];
+    if (i == 4) newSignal = newSignal + 25;
+ 
     if (newSignal > MAX_MIDI_VELOCITY) newSignal = MAX_MIDI_VELOCITY;
-    
+
     signalBuffer[i][currentSignalIndex[i]] = newSignal;
 
    /*
@@ -220,7 +224,12 @@ void recordNewPeak(short slot, short newPeak)
 void pedalHandler() {
   int currentLevel = digitalRead(KICK_SLOT);
   if (currentLevel == 1 && lastKickLevel == 0) {
-     noteFire(NOTE_KICK, 127);
+      noteMap[1] = NOTE_HI_HAT_CLOSED; 
+      noteFire(NOTE_HI_HAT_FOOT_CLOSE, 127);
+
+   }
+   if (currentLevel == 0 && lastKickLevel == 1) {
+     noteMap[1] = NOTE_HI_HAT_OPEN; 
    }
   lastKickLevel = currentLevel;
 }
@@ -229,8 +238,7 @@ void pedalHandler() {
 // 发送midi数据
 void noteFire(int note, int velocity)
 {
-  if(velocity > MAX_MIDI_VELOCITY)
-    velocity = MAX_MIDI_VELOCITY;
+  if(velocity > MAX_MIDI_VELOCITY) velocity = MAX_MIDI_VELOCITY;
   midiNoteOn(note, velocity);
   midiNoteOff(note, velocity);
 }

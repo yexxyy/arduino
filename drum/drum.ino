@@ -20,17 +20,17 @@
 #define MAX_MIDI_VELOCITY 127  //音符最大力度
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 50
+#define SNARE_THRESHOLD 40
 #define LOW_TOM_THRESHOLD 20
 #define HI_HAT_THRESHOLD 20
-#define CRASH_LEFT_THRESHOLD 40
+#define CRASH_LEFT_THRESHOLD 50
 #define HIGH_TOM_THRESHOLD 20
-#define KICK_THRESHOLD 50
+#define KICK_THRESHOLD 100
 
-#define SNARE_SCALE 1
+#define SNARE_SCALE 0.73
 #define LOW_TOM_SCALE 7
-#define HI_HAT_SCALE 7
-#define CRASH_LEFT_SCALE 8
+#define HI_HAT_SCALE 4.5
+#define CRASH_LEFT_SCALE 8.2
 #define HIGH_TOM_SCALE 7
 #define KICK_SCALE 8
 
@@ -38,10 +38,10 @@
 #define START_SLOT A0
 #define KICK_SLOT 13
 
-#define SIGNAL_BUFFER_SIZE 60
-#define PEAK_BUFFER_SIZE 20
-#define MAX_TIME_BETWEEN_PEAKS 20
-#define MIN_TIME_BETWEEN_NOTES 40
+#define SIGNAL_BUFFER_SIZE 100
+#define PEAK_BUFFER_SIZE 30
+#define MAX_TIME_BETWEEN_PEAKS 30
+#define MIN_TIME_BETWEEN_NOTES 60
 
 // 缓存踏板控制的数字电位
 int lastKickLevel;
@@ -49,7 +49,7 @@ int lastKickLevel;
 unsigned short slotMap[NUM_PIEZOS];
 unsigned short noteMap[NUM_PIEZOS];
 unsigned short thresholdMap[NUM_PIEZOS];
-unsigned short scaleMap[NUM_PIEZOS];
+float scaleMap[NUM_PIEZOS];
 
 short currentSignalIndex[NUM_PIEZOS];
 short currentPeakIndex[NUM_PIEZOS];
@@ -91,19 +91,19 @@ void setup()
     slotMap[i] = START_SLOT + i;
   }
   
+  noteMap[0] = NOTE_HIGH_TOM;
+  noteMap[1] = NOTE_HI_HAT_OPEN;
+  noteMap[2] = NOTE_CRASH_LEFT;
+  noteMap[3] = NOTE_LOW_TOM; 
+  noteMap[4] = NOTE_SNARE; 
+  noteMap[5] = NOTE_KICK;
+  
   thresholdMap[0] = HIGH_TOM_THRESHOLD;
   thresholdMap[1] = HI_HAT_THRESHOLD;
   thresholdMap[2] = CRASH_LEFT_THRESHOLD;
   thresholdMap[3] = LOW_TOM_THRESHOLD;
   thresholdMap[4] = SNARE_THRESHOLD;
   thresholdMap[5] = KICK_THRESHOLD;
-
-  noteMap[0] = NOTE_HIGH_TOM;
-  noteMap[1] = NOTE_HI_HAT_OPEN;
-  noteMap[2] = NOTE_CRASH_LEFT;
-  noteMap[3] = NOTE_LOW_TOM; 
-  noteMap[4] = NOTE_SNARE; 
-  noteMap[5] = NOTE_KICK; 
 
   scaleMap[0] = HIGH_TOM_SCALE;
   scaleMap[1] = HI_HAT_SCALE;
@@ -125,7 +125,7 @@ void loop()
     
     // 对原始信号进行归零，抵消掉本来的压力值；"归一化"处理，使得所有的数值分布在0-MAX_MIDI_VELOCITY以内
     newSignal = newSignal / scaleMap[i];
-    if (i == 4) newSignal = newSignal + 25;
+//    if (newSignal > 20) Serial.println(newSignal);
     if (newSignal > MAX_MIDI_VELOCITY) newSignal = MAX_MIDI_VELOCITY;
 
     signalBuffer[i][currentSignalIndex[i]] = newSignal;

@@ -20,19 +20,26 @@
 #define MAX_MIDI_VELOCITY 127  //音符最大力度
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 40
+#define SNARE_THRESHOLD 20
 #define LOW_TOM_THRESHOLD 20
 #define HI_HAT_THRESHOLD 20
-#define CRASH_LEFT_THRESHOLD 50
+#define CRASH_LEFT_THRESHOLD 30
 #define HIGH_TOM_THRESHOLD 20
-#define KICK_THRESHOLD 100
+#define KICK_THRESHOLD 50
 
-#define SNARE_SCALE 0.73
+#define SNARE_SCALE 0.7
 #define LOW_TOM_SCALE 7
 #define HI_HAT_SCALE 4.5
-#define CRASH_LEFT_SCALE 8.2
+#define CRASH_LEFT_SCALE 4.9
 #define HIGH_TOM_SCALE 7
-#define KICK_SCALE 8
+#define KICK_SCALE 4
+
+#define SNARE_ZERO 20
+#define LOW_TOM_ZERO 80
+#define HI_HAT_ZERO 150
+#define CRASH_LEFT_ZERO 400
+#define HIGH_TOM_ZERO 20
+#define KICK_ZERO 500
 
 #define NUM_PIEZOS 6  // 总共5个压电传感器
 #define START_SLOT A0
@@ -50,6 +57,7 @@ unsigned short slotMap[NUM_PIEZOS];
 unsigned short noteMap[NUM_PIEZOS];
 unsigned short thresholdMap[NUM_PIEZOS];
 float scaleMap[NUM_PIEZOS];
+unsigned short zeroMap[NUM_PIEZOS];
 
 short currentSignalIndex[NUM_PIEZOS];
 short currentPeakIndex[NUM_PIEZOS];
@@ -111,6 +119,13 @@ void setup()
   scaleMap[3] = LOW_TOM_SCALE; 
   scaleMap[4] = SNARE_SCALE; 
   scaleMap[5] = KICK_SCALE; 
+
+  zeroMap[0] = HIGH_TOM_ZERO;
+  zeroMap[1] = HI_HAT_ZERO;
+  zeroMap[2] = CRASH_LEFT_ZERO;
+  zeroMap[3] = LOW_TOM_ZERO; 
+  zeroMap[4] = SNARE_ZERO; 
+  zeroMap[5] = KICK_ZERO; 
 }
 
 void loop()
@@ -124,8 +139,11 @@ void loop()
     short newSignal = analogRead(slotMap[i]);
     
     // 对原始信号进行归零，抵消掉本来的压力值；"归一化"处理，使得所有的数值分布在0-MAX_MIDI_VELOCITY以内
+    newSignal = newSignal - zeroMap[i];
+    if (newSignal < 0)  newSignal = 0;
     newSignal = newSignal / scaleMap[i];
-//    if (newSignal > 20) Serial.println(newSignal);
+//    if (newSignal > 0) Serial.println(newSignal);
+
     if (newSignal > MAX_MIDI_VELOCITY) newSignal = MAX_MIDI_VELOCITY;
 
     signalBuffer[i][currentSignalIndex[i]] = newSignal;

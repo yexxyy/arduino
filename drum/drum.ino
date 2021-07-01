@@ -23,21 +23,21 @@
 #define SNARE_THRESHOLD 15
 #define LOW_TOM_THRESHOLD 15
 #define HI_HAT_THRESHOLD 10
-#define CRASH_LEFT_THRESHOLD 35
-#define HIGH_TOM_THRESHOLD 20
+#define CRASH_LEFT_THRESHOLD 20
+#define HIGH_TOM_THRESHOLD 60
 #define KICK_THRESHOLD 50
 
 #define SNARE_SCALE 0.6
 #define LOW_TOM_SCALE 7
 #define HI_HAT_SCALE 4.5
-#define CRASH_LEFT_SCALE 5.5
-#define HIGH_TOM_SCALE 6
+#define CRASH_LEFT_SCALE 6
+#define HIGH_TOM_SCALE 5.5
 #define KICK_SCALE 4
 
-#define SNARE_ZERO 20
+#define SNARE_ZERO 15
 #define LOW_TOM_ZERO 80
 #define HI_HAT_ZERO 150
-#define CRASH_LEFT_ZERO 350
+#define CRASH_LEFT_ZERO 100
 #define HIGH_TOM_ZERO 20
 #define KICK_ZERO 500
 
@@ -99,30 +99,30 @@ void setup()
     slotMap[i] = START_SLOT + i;
   }
   
-  noteMap[0] = NOTE_HIGH_TOM;
+  noteMap[0] = NOTE_CRASH_LEFT;
   noteMap[1] = NOTE_HI_HAT_OPEN;
-  noteMap[2] = NOTE_CRASH_LEFT;
+  noteMap[2] = NOTE_HIGH_TOM;
   noteMap[3] = NOTE_LOW_TOM; 
   noteMap[4] = NOTE_SNARE; 
   noteMap[5] = NOTE_KICK;
   
-  thresholdMap[0] = HIGH_TOM_THRESHOLD;
+  thresholdMap[0] = CRASH_LEFT_THRESHOLD;
   thresholdMap[1] = HI_HAT_THRESHOLD;
-  thresholdMap[2] = CRASH_LEFT_THRESHOLD;
+  thresholdMap[2] = HIGH_TOM_THRESHOLD;
   thresholdMap[3] = LOW_TOM_THRESHOLD;
   thresholdMap[4] = SNARE_THRESHOLD;
   thresholdMap[5] = KICK_THRESHOLD;
 
-  scaleMap[0] = HIGH_TOM_SCALE;
+  scaleMap[0] = CRASH_LEFT_SCALE;
   scaleMap[1] = HI_HAT_SCALE;
-  scaleMap[2] = CRASH_LEFT_SCALE;
+  scaleMap[2] = HIGH_TOM_SCALE;
   scaleMap[3] = LOW_TOM_SCALE; 
   scaleMap[4] = SNARE_SCALE; 
   scaleMap[5] = KICK_SCALE; 
 
-  zeroMap[0] = HIGH_TOM_ZERO;
+  zeroMap[0] = CRASH_LEFT_ZERO;
   zeroMap[1] = HI_HAT_ZERO;
-  zeroMap[2] = CRASH_LEFT_ZERO;
+  zeroMap[2] = HIGH_TOM_ZERO;
   zeroMap[3] = LOW_TOM_ZERO; 
   zeroMap[4] = SNARE_ZERO; 
   zeroMap[5] = KICK_ZERO; 

@@ -20,24 +20,24 @@
 #define MAX_MIDI_VELOCITY 127  //音符最大力度
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 20
-#define LOW_TOM_THRESHOLD 20
-#define HI_HAT_THRESHOLD 20
-#define CRASH_LEFT_THRESHOLD 30
+#define SNARE_THRESHOLD 15
+#define LOW_TOM_THRESHOLD 15
+#define HI_HAT_THRESHOLD 10
+#define CRASH_LEFT_THRESHOLD 35
 #define HIGH_TOM_THRESHOLD 20
 #define KICK_THRESHOLD 50
 
-#define SNARE_SCALE 0.7
+#define SNARE_SCALE 0.6
 #define LOW_TOM_SCALE 7
 #define HI_HAT_SCALE 4.5
-#define CRASH_LEFT_SCALE 4.9
-#define HIGH_TOM_SCALE 7
+#define CRASH_LEFT_SCALE 5.5
+#define HIGH_TOM_SCALE 6
 #define KICK_SCALE 4
 
 #define SNARE_ZERO 20
 #define LOW_TOM_ZERO 80
 #define HI_HAT_ZERO 150
-#define CRASH_LEFT_ZERO 400
+#define CRASH_LEFT_ZERO 350
 #define HIGH_TOM_ZERO 20
 #define KICK_ZERO 500
 
@@ -137,13 +137,13 @@ void loop()
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
     short newSignal = analogRead(slotMap[i]);
-    
+//    if (newSignal > 0) Serial.println(newSignal);
+
     // 对原始信号进行归零，抵消掉本来的压力值；"归一化"处理，使得所有的数值分布在0-MAX_MIDI_VELOCITY以内
     newSignal = newSignal - zeroMap[i];
     if (newSignal < 0)  newSignal = 0;
     newSignal = newSignal / scaleMap[i];
-//    if (newSignal > 0) Serial.println(newSignal);
-
+    
     if (newSignal > MAX_MIDI_VELOCITY) newSignal = MAX_MIDI_VELOCITY;
 
     signalBuffer[i][currentSignalIndex[i]] = newSignal;

@@ -43,7 +43,7 @@
 
 #define NUM_PIEZOS 6  // 总共5个压电传感器
 #define START_SLOT A0
-#define KICK_SLOT 13
+#define HI_HAT_SWITCH_SLOT 13
 
 #define SIGNAL_BUFFER_SIZE 100
 #define PEAK_BUFFER_SIZE 30
@@ -51,7 +51,7 @@
 #define MIN_TIME_BETWEEN_NOTES 60
 
 // 缓存踏板控制的数字电位
-int lastKickLevel;
+int lastHiHatLevel;
 
 unsigned short slotMap[NUM_PIEZOS];
 unsigned short noteMap[NUM_PIEZOS];
@@ -83,7 +83,9 @@ void setup()
 {
   Serial.begin(SERIAL_RATE);
   while(!Serial);
-  pinMode(KICK_SLOT, INPUT);
+  
+  lastHiHatLevel = 1;
+  pinMode(HI_HAT_SWITCH_SLOT, INPUT);
 
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
@@ -233,16 +235,15 @@ void recordNewPeak(short slot, short newPeak)
  * 利用电位只能标记是否应该发出声音，无法控制力度的大小
 */
 void pedalHandler() {
-  int currentLevel = digitalRead(KICK_SLOT);
-  if (currentLevel == 1 && lastKickLevel == 0) {
-      noteMap[1] = NOTE_HI_HAT_CLOSED; 
-      noteFire(NOTE_HI_HAT_FOOT_CLOSE, 127);
-
-   }
-   if (currentLevel == 0 && lastKickLevel == 1) {
+  int currentLevel = digitalRead(HI_HAT_SWITCH_SLOT);
+  if (currentLevel == 1 && lastHiHatLevel == 0) { 
      noteMap[1] = NOTE_HI_HAT_OPEN; 
    }
-  lastKickLevel = currentLevel;
+  if (currentLevel == 0 && lastHiHatLevel == 1) {
+    noteMap[1] = NOTE_HI_HAT_CLOSED; 
+    noteFire(NOTE_HI_HAT_FOOT_CLOSE, 127);
+  }
+  lastHiHatLevel = currentLevel;
 }
 
 

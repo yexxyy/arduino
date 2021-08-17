@@ -9,10 +9,14 @@ void setup() {
 
 void loop() {
     int currentLevel = digitalRead(13);
+    if (currentLevel == 1) {
+      Serial.println(currentLevel);
+    }  
+
   
-  if ((currentLevel == 0) && (lastHiHatLevel == 1 )) {
-    Serial.println("test");
-  }
+//  if ((currentLevel == 0) && (lastHiHatLevel == 1 )) {
+//    Serial.println("test");
+//  }
 //   if (currentLevel == 0 && lastHiHatLevel == 1) {
 //    Serial.print(lastHiHatLevel);
 //    Serial.println(currentLevel);

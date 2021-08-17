@@ -20,25 +20,25 @@
 #define MAX_MIDI_VELOCITY 127  //音符最大力度
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 15
+#define SNARE_THRESHOLD 95
 #define LOW_TOM_THRESHOLD 15
 #define HI_HAT_THRESHOLD 10
-#define CRASH_LEFT_THRESHOLD 20
-#define HIGH_TOM_THRESHOLD 60
+#define CRASH_LEFT_THRESHOLD 50
+#define HIGH_TOM_THRESHOLD 100
 #define KICK_THRESHOLD 50
 
-#define SNARE_SCALE 0.6
+#define SNARE_SCALE 0.8
 #define LOW_TOM_SCALE 7
 #define HI_HAT_SCALE 4.5
 #define CRASH_LEFT_SCALE 6
-#define HIGH_TOM_SCALE 5.5
+#define HIGH_TOM_SCALE 6
 #define KICK_SCALE 4
 
-#define SNARE_ZERO 15
+#define SNARE_ZERO 20
 #define LOW_TOM_ZERO 80
 #define HI_HAT_ZERO 150
 #define CRASH_LEFT_ZERO 100
-#define HIGH_TOM_ZERO 20
+#define HIGH_TOM_ZERO 150
 #define KICK_ZERO 500
 
 #define NUM_PIEZOS 6  // 总共5个压电传感器
@@ -96,7 +96,6 @@ void setup()
     noteReady[i] = false;
     noteReadyVelocity[i] = 0;
     isLastPeakZeroed[i] = true;
-    lastPeakTime[i] = 0;
     lastNoteTime[i] = 0;    
     slotMap[i] = START_SLOT + i;
   }
@@ -139,7 +138,7 @@ void loop()
   for(short i=0; i<NUM_PIEZOS; ++i)
   {
     short newSignal = analogRead(slotMap[i]);
-//    if (newSignal > 0) Serial.println(newSignal);
+//    if (newSignal > 70 ) Serial.println(newSignal);
 
     // 对原始信号进行归零，抵消掉本来的压力值；"归一化"处理，使得所有的数值分布在0-MAX_MIDI_VELOCITY以内
     newSignal = newSignal - zeroMap[i];
@@ -237,15 +236,14 @@ void recordNewPeak(short slot, short newPeak)
 void pedalHandler() {
   int currentLevel = digitalRead(HI_HAT_SWITCH_SLOT);
   if (currentLevel == 1 && lastHiHatLevel == 0) { 
-     noteMap[1] = NOTE_HI_HAT_OPEN; 
-   }
-  if (currentLevel == 0 && lastHiHatLevel == 1) {
     noteMap[1] = NOTE_HI_HAT_CLOSED; 
     noteFire(NOTE_HI_HAT_FOOT_CLOSE, 127);
   }
+  if (currentLevel == 0 && lastHiHatLevel == 1) {
+    noteMap[1] = NOTE_HI_HAT_OPEN; 
+  }
   lastHiHatLevel = currentLevel;
 }
-
 
 // 发送midi数据
 void noteFire(int note, int velocity)

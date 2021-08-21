@@ -235,11 +235,11 @@ void recordNewPeak(short slot, short newPeak)
 */
 void pedalHandler() {
   int currentLevel = digitalRead(HI_HAT_SWITCH_SLOT);
-  if (currentLevel == 1 && lastHiHatLevel == 0) { 
+  if (currentLevel == 0 && lastHiHatLevel == 1) { 
     noteMap[1] = NOTE_HI_HAT_CLOSED; 
     noteFire(NOTE_HI_HAT_FOOT_CLOSE, 127);
   }
-  if (currentLevel == 0 && lastHiHatLevel == 1) {
+  if (currentLevel == 1 && lastHiHatLevel == 0) {
     noteMap[1] = NOTE_HI_HAT_OPEN; 
   }
   lastHiHatLevel = currentLevel;

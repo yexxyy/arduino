@@ -17,14 +17,14 @@
 
 #define NOTE_ON_CMD 0x90  // 音符开始标记
 #define NOTE_OFF_CMD 0x80  //音符结束标记
-#define MAX_MIDI_VELOCITY 127  //音符最大力度
+#define MAX_MIDI_VELOCITY 125  //音符最大力度
   
 // 设置阈值，低于阈值的压力值按照0处理
-#define SNARE_THRESHOLD 95
+#define SNARE_THRESHOLD 75
 #define LOW_TOM_THRESHOLD 50
 #define HI_HAT_THRESHOLD 50
 #define CRASH_LEFT_THRESHOLD 80
-#define HIGH_TOM_THRESHOLD 110
+#define HIGH_TOM_THRESHOLD 90
 #define KICK_THRESHOLD 50
 
 #define SNARE_SCALE 0.8
